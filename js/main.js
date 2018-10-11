@@ -16,48 +16,50 @@ let statics = {
 //アクション
 class GameScene {
 	constructor() {
-		this.titleScene();
+	    this.nowScene = new TitleScene();
 	}
 
-	/**
-	 * タイトルシーン
-	 * ゲームのタイトル、「ゲームスタート」ボタンを押すとpokerSceneに移る。
-	 */
-	titleScene() {
-		let self = this;
-		console.log("title");
-
-		let $button = $("<button type='button'>Game Start</button>").on("click", function() {
-			self.sceneChange("pokerScene");
-		});
-
-		$("#poker-container").append($button);
-	}
-
-	/**
-	 * 実際のポーカーシーン。
-	 * ゲーム内で「終了」を押すとタイトルに戻る
-	 */
-	pokerScene() {
-		let self = this;
-		console.log("poker");
-		let $button = $("<button type='button'>終了</button>").on("click", function() {
-			self.sceneChange("titleScene");
-		});
-
-		$("#poker-container").append($button);
-	}
-
-	sceneChange(sceneName) {
+	changeScene(sceneName) {
 		GameScene.resetContainer();
-
-		return this[sceneName]();
+		this.nowScene = eval("new " + sceneName + "()");
 	}
 
 	static resetContainer() {
 		$("#poker-container").empty();
 	}
 
+}
+
+class TitleScene {
+    constructor() {
+        console.log("title");
+
+        let $button = $("<button type='button'>Game Start</button>").on("click", function() {
+            game.changeScene("PokerScene");
+        });
+
+        $("#poker-container").append($button);
+
+        //イベントハンドラは特に無い。
+    }
+}
+
+class PokerScene {
+    constructor() {
+        console.log("poker");
+        let $button = $("<button type='button'>終了</button>").on("click", function() {
+            game.changeScene("TitleScene");
+        });
+
+        $("#poker-container").append($button);
+        //画面描画
+        //initPokerScene
+
+        //イベントハンドラ
+    }
+    initPokerScene() {
+
+    }
 }
 
 let game = null;
