@@ -16,6 +16,33 @@ class Judge {
 		const soredHand = this.preparationJudge(hand);
 
 		console.log(soredHand);
+
+		const handData = this.checkPokerHand(soredHand);
+
+		console.log(handData);
+
+		//ロイヤルストレートフラッシュの判定
+		if (handData.isStraight && handData.isFlush && handData.ifFlushAllSuits === "s" && handData.isTopNumberStraight) {
+			return "ロイヤルストレートフラッシュ";
+		} else if (handData.isStraight && handData.isFlush) {
+			return "ストレートフラッシュ";
+		} else if (handData.isFourCard) {
+			return "フォーカード";
+		} else if (handData.isTripleCard && handData.isPairCard) {
+			return "フルハウス";
+		} else if (handData.isFlush) {
+			return "フラッシュ";
+		} else if (handData.isStraight) {
+			return "ストレート";
+		} else if (handData.isTripleCard) {
+			return "スリーカード";
+		} else if (handData.isDoubleCard) {
+			return "ツーペア";
+		} else if (handData.isPairCard) {
+			return "ワンペア";
+		} else {
+			return "ブタ";
+		}
 	}
 
 
@@ -49,5 +76,90 @@ class Judge {
 		});
 
 		return handCardStatus;
+	}
+
+	/**
+	 * 実際に役を確認する。
+	 * この後複合役をあらためて調べてください。
+	 * @param handCardStatus
+	 * @returns {{isFlush: boolean, ifFlushAllSuits: null, isStraight: boolean, isPairCard: boolean, isDoubleCard: boolean, isTripleCard: boolean, isFourCard: boolean, isTopNumberStraight: boolean}}
+	 */
+	checkPokerHand(handCardStatus) {
+
+		let handData = {
+			isFlush: false, //フラッシュ
+			ifFlushAllSuits: null, //もしもフラッシュだった時、その模様。
+			isStraight: false, //ストレート
+			isPairCard: false,
+			isDoubleCard: false,
+			isTripleCard: false,
+			isFourCard: false,
+			isTopNumberStraight: false
+		};
+
+		const suits = handCardStatus.suits;
+		const numbers = handCardStatus.numbers;
+
+		//フラッシュの判定
+		const allColor = Object.keys(suits).filter((key) => {
+			return suits[key] === 5;
+		});
+
+		if (allColor.length > 0) {
+			handData.isFlush = true;
+			handData.ifFlushAllSuits = allColor[0];
+		}
+
+		//フォーカードの判定
+		const forNumbers = Object.keys(numbers).filter((key) => {
+			return numbers[key] === 4;
+		});
+
+		if (forNumbers.length === 1) {
+			handData.isFourCard = true;
+		}
+
+		//スリーカードの判定
+		const tripleNumbers = Object.keys(numbers).filter((key) => {
+			return numbers[key] === 3;
+		});
+
+		if (tripleNumbers.length === 1) {
+			handData.isTripleCard = true;
+		}
+
+		//ダブルカードの判定
+		const doubleNumbers = Object.keys(numbers).filter((key) => {
+			return numbers[key] === 2;
+		});
+
+		if (doubleNumbers.length === 2) {
+			handData.isDoubleCard = true;
+		} else if (doubleNumbers.length === 1) {
+			handData.isPairCard = true;
+		}
+
+		//ストレートの判定
+		let count = 0;
+		for(let i = 1; i <= 14; i++) {
+			//連続した数字を数え、それが５になったらストレート。
+			if (numbers[i] === 1) {
+				count++;
+			} else {
+				count = 0;
+			}
+
+			if (count === 5) {
+				handData.isStraight = true;
+			}
+		}
+
+		//そのストレートが一番大きい役かどうか。
+		//ストレートフラグが1の時、13と14が1ならば一番大きい。
+		if (handData.isStraight && numbers[13] === 1 && numbers[14] === 1) {
+			handData.isTopNumberStraight = true;
+		}
+
+		return handData;
 	}
 }
