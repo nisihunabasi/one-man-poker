@@ -55,7 +55,7 @@ class PokerScene {
     constructor() {
         this.deck = new Deck(statics.cards);
         this.hand = new Hand();
-        this.wallet = new Wallet();
+        this.wallet = new Wallet(statics.initCoins);
         this.judge = new Judge();
         this.states = new States();
 
