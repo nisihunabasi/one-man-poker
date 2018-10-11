@@ -22,7 +22,7 @@ class Hand {
 	 * @result array
 	 */
 	receive(array) {
-		this.card.concat(array);
+		this.card = this.card.concat(array);
 
 		return this.card;
 	}
