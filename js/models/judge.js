@@ -9,7 +9,10 @@ class Judge {
 	}
 
 	/**
+	 * Handモデルに格納されているカードを基準に役を作成する。
+	 * 役は高いものほど優先となる。
 	 *
+	 * また、カードの枚数は５枚であることが前提で作られている
 	 * @param {Hand} hand
 	 */
 	toJudge(hand) {
@@ -20,6 +23,12 @@ class Judge {
 		const handData = this.checkPokerHand(soredHand);
 
 		console.log(handData);
+
+		/*
+		 * 実際の役の判定。
+		 * 文字列の形で役を返している。詳しくはstatics.scoreを参照。
+		 * ワンペア必要ないのにかえしてるのは、せっかく調べてるしなあ、という小さい遊び心です。
+		 */
 
 		//ロイヤルストレートフラッシュの判定
 		if (handData.isStraight && handData.isFlush && handData.ifFlushAllSuits === "s" && handData.isTopNumberStraight) {
@@ -61,6 +70,7 @@ class Judge {
 			return {suit: suit, number: Number(number)}
 		});
 
+		//カードの中身を要素ごとに分解してまとめなおす。
 		let handCardStatus = {
 			suits: {s:0, h:0, c:0, d:0},
 			numbers: {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0} //エースは1かつ14と扱う
@@ -80,7 +90,7 @@ class Judge {
 
 	/**
 	 * 実際に役を確認する。
-	 * この後複合役をあらためて調べてください。
+	 * この後、ここで判定された役から総合的に実際の役をあらためて調べるための種のようなもの。
 	 * @param handCardStatus
 	 * @returns {{isFlush: boolean, ifFlushAllSuits: null, isStraight: boolean, isPairCard: boolean, isDoubleCard: boolean, isTripleCard: boolean, isFourCard: boolean, isTopNumberStraight: boolean}}
 	 */
