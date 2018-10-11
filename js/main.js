@@ -60,38 +60,134 @@ class PokerScene {
 
         this.$pokerContainer = $("#poker-container");
 
-        let $button = $("<button type='button'>終了</button>").on("click", function() {
-            game.changeScene("TitleScene");
-        });
-
-        $("#poker-container").append($button);
+        //ゲーム画面初期化
+        this.initPokerScene();
 
         //ゲーム初期化
         this.initPokerGame();
 
-        //画面描画
-        this.initPokerScene();
+        //ニューゲーム描画
+        this.drawNewGame();
 
         //イベントハンドラ
+        $("#hand-container").on("click", "span.card-container", (e) => {
+            console.log("fired!");
+            let $target = $(e.target);
+            if ($target.hasClass("selected")) {
+                $target.removeClass("selected");
+            } else {
+                $target.addClass("selected");
+            }
+
+        });
     }
     initPokerScene() {
-        //山札の描画。多分裏カード1枚ぐらい書いておけばOK
-        //以降、デバッグ用コード。要らなくなったら消す。
-        let $deckContainer = $("<div id='poker-deck'></div>");
-        this.deck.stack.forEach(function (val) {
-            $deckContainer.append("<span>" + val + "</span>");
-        });
-        $deckContainer.append("<div>※デバッグ用に山札の内容を描画しています。</div>");
-        $deckContainer.appendTo(this.$pokerContainer);
 
+        //ステージ雛形をクローンして持ってくる
+        let $pokerStage = $("#poker-stage-prototype").clone();
+        $pokerStage.attr("id", "poker-stage").show();
+        $pokerStage.appendTo(this.$pokerContainer);
+
+        //山札の描画。多分裏カード1枚ぐらい書いておけばOK
+        let $deckContainer = $("#deck-container");
+        $("<span>" + this.drawCard("") + "</span>").appendTo($deckContainer);
+
+        //ボタンの描画。イベントハンドラも追加。
+        let $buttonContainer = $("#button-container");
+        $("<button type='button' class='change-button'>カードチェンジ</button>").appendTo($buttonContainer).on("click", (e) => {
+            this.onClickCardChange();
+        });
+        $("<button type='button' class='retry-button'>もう1回</button>").prop("disabled", true).appendTo($buttonContainer).on("click", (e) => {
+            this.onClickNewGame();
+        });
+        $("<button type='button' class='end-button'>終了</button>").appendTo($buttonContainer).on("click", function() {
+            if (confirm("終了しますか？")) {
+                game.changeScene("TitleScene");
+            }
+
+        });
+
+    }
+
+    drawNewGame() {
         //手札の描画。別メソッドに分ける。
+        this.eraseHand();
         this.drawHand();
+
+        //カードチェンジ出来るようにする。
+        $(".change-button").prop("disabled", false);
+        //ニューゲームは押せないように。
+        $(".retry-button").prop("disabled", true);
     }
 
     drawHand() {
+        let handContainer = $("#hand-container");
+        this.hand.get().forEach(element => {
+            $("<span class='card-container' data-num='" + element + "'>" + this.drawCard(element) + "</span>").appendTo(handContainer);
+        });
 
     }
+    eraseHand() {
+        $("#hand-container").empty();
+    }
 
+    /**
+     *
+     * @param {String} code
+     */
+    drawCard(code) {
+        let suit, num, numForView, suitMark = "　";
+        if (code === "") {
+            suit = num = "　";
+        } else {
+            suit = code.slice(0, 1);
+            num  = code.slice(1);
+        }
+
+        if (suit === "h") {
+            suitMark = "♥";
+        } else if (suit === "d") {
+            suitMark = "◆";
+        } else if (suit === "c") {
+            suitMark = "♣";
+        } else if (suit === "s") {
+            suitMark = "♠";
+        }
+
+        if (num === "1") {
+            numForView = "Ａ";
+        } else if (num === "10") {
+            numForView = "⑩";
+        } else if (num === "11") {
+            numForView = "Ｊ";
+        } else if (num === "12") {
+            numForView = "Ｑ"
+        } else if (num === "13") {
+            numForView = "Ｋ";
+        } else if (num === "　") {
+            numForView = "　";
+        } else {
+            numForView = String.fromCharCode(num.charCodeAt(0) + 0xFEE0);
+        }
+
+        let cardPic =
+            "┌───┐" +
+            "│　　　│" +
+            "│　　　│" +
+            "│　　　│" +
+            "└───┘";
+        let cardPicAry = cardPic.split("");
+        cardPicAry[6] = cardPicAry[18] = suitMark;
+        cardPicAry[12] = numForView;
+        //HTML用文字列にする。
+        cardPicAry[4] = "┐<br>";
+        cardPicAry[9] = cardPicAry[14] = cardPicAry[19] = "│<br>";
+        cardPic = cardPicAry.join("");
+        console.log(cardPic);
+
+        return cardPic;
+
+    }
     /**
      * ポーカーゲーム1セットの初期化。
      * カードを最初に配る際に動かす。
@@ -102,15 +198,56 @@ class PokerScene {
         this.states.gameCount++;
         //山札初期化＋シャッフル
         this.deck.new();
-        console.log(this.deck.stack);
+        //手札初期化
+        this.hand.new();
         //プレイヤーに配る。
+        this.hand.receive(this.deck.deal(5));
+
+        //おわり
+    }
+
+    onClickCardChange(e) {
+        console.log(("card Change!!"));
+
+        //.selectedがついているカードを拾ってチェンジする。
+        let targetNums = [];
+        $("#hand-container span.selected").each((i, elm) => {
+            targetNums.push($(elm).data("num"));
+        });
+        //手札を捨てて変わりのカードを貰う。
+        this.hand.discard(targetNums);
+        this.hand.receive(this.deck.deal(targetNums.length));
+
+        //カード再描画
+        this.eraseHand();
+        this.drawHand();
+
+        //直ちに手役の判定
+        let yaku = this.judge.toJudge(this.hand);
+
+        if(yaku === "ブタ" || yaku === "ワンペア") {
+            alert("はずれ");
+        } else {
+            alert(yaku);
+        }
+        //カードチェンジできないようにする。
+        $(".change-button").prop("disabled", true);
+        //newGameを有効にする。
+        $(".retry-button").prop("disabled", false);
+    }
+
+    onClickNewGame() {
+        //ゲーム初期化
+        this.initPokerGame();
+
+        //ニューゲーム描画
+        this.drawNewGame();
     }
 }
 
 let game = null;
 
 function initGame() {
-	console.log("Game Start!!");
 	game = new GameScene();
 }
 

@@ -97,11 +97,43 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+#poker-stage {
+    background-color: #eee;
+    width: 500px;
+    height: 300px;
+}
+#poker-stage #button-container {
+    width: 100%;
+    height: 36px;
+    background-color: darkgray;
+}
+#poker-stage #main-stage {
+    width: 100%;
+    height: 264px;
+    background-color: forestgreen;
+}
+#poker-stage #deck-container {
+    width: 100px;
+    height: 120px;
+    background-color: #b3d4fc;
+}
+#poker-stage #score-container {
 
+}
+#poker-stage #hand-container {
+    padding-left: 0.5em;
+}
+#poker-stage #wallet-status {
 
-
-
-
+}
+#poker-stage .card-container {
+    display: block;
+    float: left;
+    width: 6em;
+}
+#poker-stage .selected {
+    margin-top: -1em;
+}
 
 
 
