@@ -31,7 +31,7 @@ class Judge {
 		 */
 
 		//ロイヤルストレートフラッシュの判定
-		if (handData.isStraight && handData.isFlush && handData.ifFlushAllSuits === "s" && handData.isTopNumberStraight) {
+		if (handData.isStraight && handData.isFlush && handData.isTopNumberStraight) {
 			return "ロイヤルストレートフラッシュ";
 		} else if (handData.isStraight && handData.isFlush) {
 			return "ストレートフラッシュ";
