@@ -122,6 +122,8 @@ class Judge {
 
 		//フォーカードの判定
 		const forNumbers = Object.keys(numbers).filter((key) => {
+			if (key === "14") return false;
+
 			return numbers[key] === 4;
 		});
 
@@ -131,6 +133,7 @@ class Judge {
 
 		//スリーカードの判定
 		const tripleNumbers = Object.keys(numbers).filter((key) => {
+			if (key === "14") return false;
 			return numbers[key] === 3;
 		});
 
@@ -140,6 +143,7 @@ class Judge {
 
 		//ダブルカードの判定
 		const doubleNumbers = Object.keys(numbers).filter((key) => {
+			if (key === "14") return false;
 			return numbers[key] === 2;
 		});
 
