@@ -8,8 +8,8 @@ class Deck {
 	 * @param {Array} card
 	 */
 	constructor(card) {
-		this.stack = [].concat(card);
-		this.cardData = [].concat(card);
+		this.stack = [].concat(card);       //山札の実体
+		this.cardData = [].concat(card);    //カードの定義データ
 
 		this.new();
 	}
@@ -19,7 +19,7 @@ class Deck {
 	 * 新規作成時、山札のシャッフルを行う。
 	 */
 	new () {
-		this.stack = this.cardData.clone();
+		this.stack = [].concat(this.cardData);
 		this.shuffle();
 	}
 

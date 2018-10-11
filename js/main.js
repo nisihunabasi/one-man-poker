@@ -40,13 +40,11 @@ class GameScene {
 
 class TitleScene {
     constructor() {
-        console.log("title");
-
         let $button = $("<button type='button'>Game Start</button>").on("click", function() {
             game.changeScene("PokerScene");
         });
 
-        $("#poker-container").append($button);
+        $("#poker-container").append("<h1>One-man Poker</h1>").append($button);
 
         //イベントハンドラは特に無い。
     }
@@ -54,19 +52,58 @@ class TitleScene {
 
 class PokerScene {
     constructor() {
-        console.log("poker");
+        this.deck = new Deck(statics.cards);
+        this.hand = new Hand();
+        this.wallet = new Wallet();
+        this.judge = new Judge();
+        this.states = new States();
+
+        this.$pokerContainer = $("#poker-container");
+
         let $button = $("<button type='button'>終了</button>").on("click", function() {
             game.changeScene("TitleScene");
         });
 
         $("#poker-container").append($button);
+
+        //ゲーム初期化
+        this.initPokerGame();
+
         //画面描画
-        //initPokerScene
+        this.initPokerScene();
 
         //イベントハンドラ
     }
     initPokerScene() {
+        //山札の描画。多分裏カード1枚ぐらい書いておけばOK
+        //以降、デバッグ用コード。要らなくなったら消す。
+        let $deckContainer = $("<div id='poker-deck'></div>");
+        this.deck.stack.forEach(function (val) {
+            $deckContainer.append("<span>" + val + "</span>");
+        });
+        $deckContainer.append("<div>※デバッグ用に山札の内容を描画しています。</div>");
+        $deckContainer.appendTo(this.$pokerContainer);
 
+        //手札の描画。別メソッドに分ける。
+        this.drawHand();
+    }
+
+    drawHand() {
+
+    }
+
+    /**
+     * ポーカーゲーム1セットの初期化。
+     * カードを最初に配る際に動かす。
+     * 山札初期化→シャッフル→プレイヤーに5枚配る。までを行う。
+     */
+    initPokerGame() {
+        //ゲームカウント加算
+        this.states.gameCount++;
+        //山札初期化＋シャッフル
+        this.deck.new();
+        console.log(this.deck.stack);
+        //プレイヤーに配る。
     }
 }
 

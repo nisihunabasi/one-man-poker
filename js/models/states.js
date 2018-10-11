@@ -4,6 +4,6 @@
  */
 class States {
     constructor() {
-
+        this.gameCount = 0; //ゲームを行った回数
     }
 }
