@@ -1,8 +1,7 @@
-.idea/vagrant.xml
-.idea/one-man-poker.iml
-.idea/misc.xml
-.idea/codeStyles/codeStyleConfig.xml
-.idea/workspace.xml
-.idea/dictionaries/tanabe.xml
-.idea/modules.xml
-.idea/vcs.xml
+# Include your project-specific ignores in this file
+# Read about how to use .gitignore: https://help.github.com/articles/ignoring-files
+# Useful .gitignore templates: https://github.com/github/gitignore
+/node_modules
+/public/storage
+/vendor
+/.idea
